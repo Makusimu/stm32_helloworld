@@ -1,0 +1,32 @@
+{
+    "env": {
+        "project-includes": [
+            "${workspaceFolder}",
+            "${workspaceFolder}/system/inc"
+        ],
+        "arm-gcc": "/home/makusimu/projects/gcc-arm-none-eabi-8-2019-q3-update/bin/arm-none-eabi-gcc"
+    },
+    "configurations": [
+        {
+            "name": "Embedded",
+            "intelliSenseMode": "gcc-x86",
+            "includePath": [
+                "${project-includes}"
+            ],
+            "defines": [
+                "STM32F103xB"
+            ],
+            "compilerPath": "${arm-gcc}",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        }
+    ],
+    "version": 4
+}
