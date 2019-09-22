@@ -4,7 +4,7 @@
 // LED: PC13
 
 GPIO_TypeDef *port = GPIOC;
-uint32_t delayTimeout_ = 100000;
+static volatile uint32_t sysTickCount_ = 0;
 void delay(uint32_t ticks);
 
 void init_rcc();
@@ -27,7 +27,7 @@ int main()
   while(1)
   {
     toggle_led();
-    delay(delayTimeout_);
+    delay(200);
   }
   return 0;
 }
@@ -98,7 +98,7 @@ void init_rcc()
   init_hse();
 
   SystemCoreClockUpdate();
-  delayTimeout_ = SystemCoreClock/10UL;
+  SysTick_Config(SystemCoreClock/1000);
 
   SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPCEN);
 }
@@ -132,9 +132,12 @@ void led_off()
 
 void delay(uint32_t ticks)
 {
-  if(ticks == 0)
-    return;
+  sysTickCount_ = ticks;
+  while(sysTickCount_);
+}
 
-  volatile uint32_t cnt = ticks;
-  while(--cnt);
+void SysTick_Handler()
+{
+  if (sysTickCount_)
+    --sysTickCount_;
 }
