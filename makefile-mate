@@ -1,11 +1,11 @@
 
 ########################################################################
-TOOLCHAIN_ROOT=../../programs/arm-gcc/bin
+TOOLCHAIN_ROOT=~/projects/gcc-arm-none-eabi-8-2019-q3-update/bin
 CC=$(TOOLCHAIN_ROOT)/arm-none-eabi-gcc
 LD=$(TOOLCHAIN_ROOT)/arm-none-eabi-gcc
 CP=$(TOOLCHAIN_ROOT)/arm-none-eabi-objcopy
 
-ROOT_DIR=.
+ROOT_DIR=/home/makusimu/projects/test
 
 ########################################################################
 LDSCRIPT=-T$(ROOT_DIR)/system/stm32f103xb.ld

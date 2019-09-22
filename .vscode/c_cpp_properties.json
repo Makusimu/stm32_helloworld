@@ -2,9 +2,10 @@
     "env": {
         "project-includes": [
             "${workspaceFolder}",
-            "${workspaceFolder}/system/inc"
+            "${workspaceFolder}/system/inc",
+            "x:/#Embedded/programs/arm-gcc/arm-none-eabi/include"
         ],
-        "arm-gcc": "/home/makusimu/projects/gcc-arm-none-eabi-8-2019-q3-update/bin/arm-none-eabi-gcc"
+        "arm-gcc": "x:/#Embedded/programs/arm-gcc"
     },
     "configurations": [
         {
