@@ -1,0 +1,17 @@
+// Поместите настраиваемые сочетания клавиш в этот файл, чтобы перезаписать клавиши по умолчанию.
+[
+  {
+    "key": "ctrl+shift+alt+c",
+    "command": "liveSass.command.oneTimeCompileSass"
+  },
+  {
+    "key": "f8",
+    "command": "workbench.action.tasks.runTask",
+    "args": "make"
+  },
+  {
+    "key": "shift+f8",
+    "command": "workbench.action.tasks.runTask",
+    "args": "clean"
+  }
+]
