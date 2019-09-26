@@ -1,73 +1,62 @@
-
-########################################################################
-TOOLCHAIN_ROOT=../../programs/arm-gcc/bin
-CC=$(TOOLCHAIN_ROOT)/arm-none-eabi-gcc
-LD=$(TOOLCHAIN_ROOT)/arm-none-eabi-gcc
-CP=$(TOOLCHAIN_ROOT)/arm-none-eabi-objcopy
-
+TOOLCHAIN_DIR=../../programs/arm-gcc/bin
 ROOT_DIR=.
+SRC_DIR=$(ROOT_DIR)/src
+SYSTEM_DIR=$(ROOT_DIR)/system
+OUTPUT_DIR=$(ROOT_DIR)/release
 
-########################################################################
-LDSCRIPT=-T$(ROOT_DIR)/system/stm32f103xb.ld
+CC=$(TOOLCHAIN_DIR)/arm-none-eabi-gcc
+LD=$(TOOLCHAIN_DIR)/arm-none-eabi-gcc
+CP=$(TOOLCHAIN_DIR)/arm-none-eabi-objcopy
 
-########################################################################
-INC+=-I$(ROOT_DIR)/system/inc
-
-SRC+=$(ROOT_DIR)/main.c
-SRC+=$(ROOT_DIR)/system/src/system_stm32f1xx.c
-
-ASM+=$(ROOT_DIR)/system/src/startup_stm32f103xb.s
-
-#######################################################################
-OBJ=$(SRC:%.c=%.o)
-OBJ+=$(ASM:%.s=%.o)
-
-#######################################################################
-CFLAGS += -mcpu=cortex-m3 
-CFLAGS += -mlittle-endian
-CFLAGS += -mthumb
-CFLAGS += -g
-CFLAGS += -DSTM32F103xB
-CFLAGS += $(INC)
+LDSCRIPT=-T$(SYSTEM_DIR)/stm32f103xb.ld
 
 LDFLAGS += -mcpu=cortex-m3
 LDFLAGS += -mlittle-endian
 LDFLAGS += -mthumb
 LDFLAGS += $(LDSCRIPT)
+# включает удаление неиспользуемых секций
 LDFLAGS += -Wl,--gc-section
+#LDFLAGS += -fno-exceptions
 
-######################################################################
-all: start
-	@echo "\n"
-	@echo "END"
+CFLAGS += -mcpu=cortex-m3
+CFLAGS += -mlittle-endian
+CFLAGS += -mthumb
+# Добавление отладочной информации
+CFLAGS += -g
+#CFLAGS += -fno-exceptions
+CFLAGS += -DSTM32F103xB
+CFLAGS += $(INC)
 
-start: main.elf
-	@echo "\n"
-	@echo "OUT"
-	@echo "********************************************************"
-	$(CP) -Oihex main.elf main.hex 
-	@echo "********************************************************"
+INC+=-I$(SYSTEM_DIR)/inc
+
+SRC_C+=$(SRC_DIR)/main.c
+SRC_C+=$(SYSTEM_DIR)/src/system_stm32f1xx.c
+
+ASM+=$(SYSTEM_DIR)/startup_stm32f103xb.s
+
+OBJ=$(SRC_C:%.c=%.o)
+OBJ+=$(ASM:%.s=%.o)
+
+
+all: hex
+
+hex: main.elf
+	@echo "*** HEX ***"
+	$(CP) -Oihex $(OUTPUT_DIR)/main.elf $(OUTPUT_DIR)/main.hex
 
 main.elf: $(OBJ)
-	@echo "\n"
-	@echo "LINK"
-	@echo "********************************************************"
-	$(LD) $(LDFLAGS) $(OBJ) -o main.elf
-	@echo "********************************************************"
+	@echo "*** LINK ***"
+	@mkdir -p $(OUTPUT_DIR)
+	$(LD) $(LDFLAGS) $(OBJ) -o $(OUTPUT_DIR)/main.elf
 
 %.o: %.c
-	@echo "\n"
-	@echo "COMPILE C"
-	@echo "********************************************************"
+	@echo "*** COMPILE C ***"
 	$(CC) $(CFLAGS) -c $< -o $@
-	@echo "********************************************************"
 
 %.o: %.s
-	@echo "\n"
-	@echo "COMPILE S"
-	@echo "********************************************************"
+	@echo "*** COMPILE ASM ***"
 	$(CC) $(CFLAGS) -c $< -o $@
-	@echo "********************************************************"
 
 clean:
-	rm -f $(OBJ) main.elf main.hex
+	@echo "*** CLEAN ***"
+	rm -f $(OBJ) $(OUTPUT_DIR)/main.elf $(OUTPUT_DIR)/main.hex
