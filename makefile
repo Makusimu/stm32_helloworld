@@ -3,6 +3,8 @@ ROOT_DIR = .
 SRC_DIR = $(ROOT_DIR)/src
 SYSTEM_DIR = $(ROOT_DIR)/system
 
+OBJ_DIR = $(ROOT_DIR)/obj
+
 ifeq ($(CONFIG), DEBUG)
 OUTPUT_DIR = $(ROOT_DIR)/debug
 OFLAGS += -ggdb3
@@ -35,10 +37,10 @@ MCUFLAGS += -mthumb
 
 #region SOURCES
 INC += -I$(SYSTEM_DIR)/inc
+INC += -I$(SRC_DIR)/inc
 
 SRC_CPP += $(SRC_DIR)/main.cpp
 SRC_C += $(SYSTEM_DIR)/src/system_stm32f1xx.c
-
 ASM += $(SYSTEM_DIR)/startup_stm32f103xb.s
 
 OBJ = $(SRC_CPP:%.cpp=%.o)
@@ -57,6 +59,7 @@ LDFLAGS += --specs=nosys.specs
 CFLAGS += $(MCUFLAGS)
 CFLAGS += $(OFLAGS)
 CFLAGS += -fno-exceptions
+CFLAGS += -Wall -Wextra -Werror
 CFLAGS += $(DEFS)
 CFLAGS += $(INC)
 #endregion
@@ -68,6 +71,7 @@ all: directories clean clean_target hex
 directories:
 	@echo "*** CREATE DIRECTORIES ***"
 	@mkdir -p $(OUTPUT_DIR)
+	@mkdir -p $(OBJ_DIR)
 
 hex: elf
 	@echo "*** MAKE HEX ***"
