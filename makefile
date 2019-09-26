@@ -1,75 +1,92 @@
-TOOLCHAIN_DIR=../../programs/arm-gcc/bin
-ROOT_DIR=.
-SRC_DIR=$(ROOT_DIR)/src
-SYSTEM_DIR=$(ROOT_DIR)/system
-OUTPUT_DIR=$(ROOT_DIR)/release
+TOOLCHAIN_DIR = ../../programs/arm-gcc/bin
+TOOLCHAIN = $(TOOLCHAIN_DIR)/arm-none-eabi-
+ROOT_DIR = .
+SRC_DIR = $(ROOT_DIR)/src
+SYSTEM_DIR = $(ROOT_DIR)/system
 
-CC=$(TOOLCHAIN_DIR)/arm-none-eabi-g++
-LD=$(TOOLCHAIN_DIR)/arm-none-eabi-g++
-CP=$(TOOLCHAIN_DIR)/arm-none-eabi-objcopy
-SIZE=$(TOOLCHAIN_DIR)/arm-none-eabi-size
+ifeq ($(CONFIG), DEBUG)
+OUTPUT_DIR = $(ROOT_DIR)/debug
+else
+OUTPUT_DIR = $(ROOT_DIR)/release
+endif
 
-LDSCRIPT=-T$(SYSTEM_DIR)/stm32f103xb.ld
+TARGET = $(OUTPUT_DIR)/main
 
-LDFLAGS += -mcpu=cortex-m3
-LDFLAGS += -mlittle-endian
-LDFLAGS += -mthumb
+CC = $(TOOLCHAIN)gcc
+LD = $(TOOLCHAIN)gcc
+CP = $(TOOLCHAIN)objcopy
+SIZE = $(TOOLCHAIN)size
+
+LDSCRIPT = -T$(SYSTEM_DIR)/stm32f103xb.ld
+
+DEFS += -DSTM32F103xB
+
+MCUFLAGS += -mcpu=cortex-m3
+MCUFLAGS += -mlittle-endian
+MCUFLAGS += -mthumb
+
+LDFLAGS += $(MCUFLAGS)
 LDFLAGS += $(LDSCRIPT)
-# включает удаление неиспользуемых секций
 LDFLAGS += -Wl,--gc-section
-# Без этого флага не собирается с помощью g++
-LDFLAGS += -specs=nosys.specs
+LDFLAGS += -Wl,-Map=$(TARGET).map
+LDFLAGS += --specs=nano.specs
+LDFLAGS += --specs=nosys.specs
 
-CFLAGS += -mcpu=cortex-m3
-CFLAGS += -mlittle-endian
-CFLAGS += -mthumb
-# Добавление отладочной информации
-CFLAGS += -g
-# Без этого флага не собирается с помощью g++
-#CFLAGS += -fno-exceptions
-CFLAGS += -DSTM32F103xB
+CFLAGS += $(MCUFLAGS)
+ifeq ($(CONFIG), DEBUG)
+CFLAGS += -ggdb3
+CFLAGS += -O0
+else
+CFLAGS += -Os
+endif
+CFLAGS += -fno-exceptions
+CFLAGS += $(DEFS)
 CFLAGS += $(INC)
 
-INC+=-I$(SYSTEM_DIR)/inc
+INC += -I$(SYSTEM_DIR)/inc
 
-SRC_CPP+=$(SRC_DIR)/main.cpp
-SRC_C+=$(SYSTEM_DIR)/src/system_stm32f1xx.c
+SRC_CPP += $(SRC_DIR)/main.cpp
+SRC_C += $(SYSTEM_DIR)/src/system_stm32f1xx.c
 
-ASM+=$(SYSTEM_DIR)/startup_stm32f103xb.s
+ASM += $(SYSTEM_DIR)/startup_stm32f103xb.s
 
-OBJ=$(SRC_CPP:%.cpp=%.o)
-OBJ+=$(SRC_C:%.c=%.o)
-OBJ+=$(ASM:%.s=%.o)
+OBJ = $(SRC_CPP:%.cpp=%.o)
+OBJ += $(SRC_C:%.c=%.o)
+OBJ += $(ASM:%.s=%.o)
 
 
-all: directories hex
+all: directories clean clean_target hex
 	@echo "*** DONE ***"
-	$(SIZE) $(OUTPUT_DIR)/main.elf
+	@$(SIZE) $(TARGET).elf
 
 directories:
 	@echo "*** CREATE DIRECTORIES ***"
 	@mkdir -p $(OUTPUT_DIR)
 
-hex: main.elf
+hex: elf
 	@echo "*** MAKE HEX ***"
-	$(CP) -Oihex $(OUTPUT_DIR)/main.elf $(OUTPUT_DIR)/main.hex
+	@$(CP) -Oihex $(TARGET).elf $(TARGET).hex
 
-main.elf: $(OBJ)
+elf: $(OBJ)
 	@echo "*** LINK ***"
-	$(LD) $(LDFLAGS) $(OBJ) -o $(OUTPUT_DIR)/main.elf
+	@$(LD) $(LDFLAGS) $(OBJ) -o $(TARGET).elf
 
 %.o: %.cpp
 	@echo "*** COMPILE C++ ***"
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -std=c++11 -c $< -o $@
 
 %.o: %.c
 	@echo "*** COMPILE C ***"
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -std=c11 -c $< -o $@
 
 %.o: %.s
 	@echo "*** COMPILE ASM ***"
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	@echo "*** CLEAN ***"
-	rm -f $(OBJ) $(OUTPUT_DIR)/main.elf $(OUTPUT_DIR)/main.hex
+	@rm -f $(OBJ)
+
+clean_target:
+	@echo "*** CLEAN TARGET ***"
+	@rm -f $(TARGET).elf $(TARGET).hex $(TARGET).map

@@ -4,11 +4,18 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "make",
+      "label": "release",
       "type": "shell",
       "command": "make",
       "group": "build",
-      "args": [""],
+      "args": ["CONFIG=RELEASE"],
+    },
+    {
+      "label": "debug",
+      "type": "shell",
+      "command": "make",
+      "group": "build",
+      "args": ["CONFIG=DEBUG"],
     },
     {
       "label": "clean",
