@@ -1,22 +1,29 @@
-TOOLCHAIN_DIR = ../../programs/arm-gcc/bin
-TOOLCHAIN = $(TOOLCHAIN_DIR)/arm-none-eabi-
+
 ROOT_DIR = .
 SRC_DIR = $(ROOT_DIR)/src
 SYSTEM_DIR = $(ROOT_DIR)/system
 
 ifeq ($(CONFIG), DEBUG)
 OUTPUT_DIR = $(ROOT_DIR)/debug
+OFLAGS += -ggdb3
+OFLAGS += -O0
 else
 OUTPUT_DIR = $(ROOT_DIR)/release
+OFLAGS += -Os
 endif
 
 TARGET = $(OUTPUT_DIR)/main
 
+#region TOOLCHAIN
+TOOLCHAIN_DIR = ../../programs/arm-gcc/bin
+TOOLCHAIN = $(TOOLCHAIN_DIR)/arm-none-eabi-
 CC = $(TOOLCHAIN)gcc
 LD = $(TOOLCHAIN)gcc
 CP = $(TOOLCHAIN)objcopy
 SIZE = $(TOOLCHAIN)size
+#endregion
 
+#region PLATFORM
 LDSCRIPT = -T$(SYSTEM_DIR)/stm32f103xb.ld
 
 DEFS += -DSTM32F103xB
@@ -24,25 +31,9 @@ DEFS += -DSTM32F103xB
 MCUFLAGS += -mcpu=cortex-m3
 MCUFLAGS += -mlittle-endian
 MCUFLAGS += -mthumb
+#endregion
 
-LDFLAGS += $(MCUFLAGS)
-LDFLAGS += $(LDSCRIPT)
-LDFLAGS += -Wl,--gc-section
-LDFLAGS += -Wl,-Map=$(TARGET).map
-LDFLAGS += --specs=nano.specs
-LDFLAGS += --specs=nosys.specs
-
-CFLAGS += $(MCUFLAGS)
-ifeq ($(CONFIG), DEBUG)
-CFLAGS += -ggdb3
-CFLAGS += -O0
-else
-CFLAGS += -Os
-endif
-CFLAGS += -fno-exceptions
-CFLAGS += $(DEFS)
-CFLAGS += $(INC)
-
+#region SOURCES
 INC += -I$(SYSTEM_DIR)/inc
 
 SRC_CPP += $(SRC_DIR)/main.cpp
@@ -53,7 +44,22 @@ ASM += $(SYSTEM_DIR)/startup_stm32f103xb.s
 OBJ = $(SRC_CPP:%.cpp=%.o)
 OBJ += $(SRC_C:%.c=%.o)
 OBJ += $(ASM:%.s=%.o)
+#endregion
 
+#region FLAGS
+LDFLAGS += $(MCUFLAGS)
+LDFLAGS += $(LDSCRIPT)
+LDFLAGS += -Wl,--gc-section
+LDFLAGS += -Wl,-Map=$(TARGET).map
+LDFLAGS += --specs=nano.specs
+LDFLAGS += --specs=nosys.specs
+
+CFLAGS += $(MCUFLAGS)
+CFLAGS += $(OFLAGS)
+CFLAGS += -fno-exceptions
+CFLAGS += $(DEFS)
+CFLAGS += $(INC)
+#endregion
 
 all: directories clean clean_target hex
 	@echo "*** DONE ***"
