@@ -4,9 +4,10 @@ SRC_DIR=$(ROOT_DIR)/src
 SYSTEM_DIR=$(ROOT_DIR)/system
 OUTPUT_DIR=$(ROOT_DIR)/release
 
-CC=$(TOOLCHAIN_DIR)/arm-none-eabi-gcc
-LD=$(TOOLCHAIN_DIR)/arm-none-eabi-gcc
+CC=$(TOOLCHAIN_DIR)/arm-none-eabi-g++
+LD=$(TOOLCHAIN_DIR)/arm-none-eabi-g++
 CP=$(TOOLCHAIN_DIR)/arm-none-eabi-objcopy
+SIZE=$(TOOLCHAIN_DIR)/arm-none-eabi-size
 
 LDSCRIPT=-T$(SYSTEM_DIR)/stm32f103xb.ld
 
@@ -17,7 +18,7 @@ LDFLAGS += $(LDSCRIPT)
 # включает удаление неиспользуемых секций
 LDFLAGS += -Wl,--gc-section
 # Без этого флага не собирается с помощью g++
-#LDFLAGS += -fno-exceptions
+LDFLAGS += -specs=nosys.specs
 
 CFLAGS += -mcpu=cortex-m3
 CFLAGS += -mlittle-endian
@@ -31,17 +32,19 @@ CFLAGS += $(INC)
 
 INC+=-I$(SYSTEM_DIR)/inc
 
-SRC_C+=$(SRC_DIR)/main.c
+SRC_CPP+=$(SRC_DIR)/main.cpp
 SRC_C+=$(SYSTEM_DIR)/src/system_stm32f1xx.c
 
 ASM+=$(SYSTEM_DIR)/startup_stm32f103xb.s
 
-OBJ=$(SRC_C:%.c=%.o)
+OBJ=$(SRC_CPP:%.cpp=%.o)
+OBJ+=$(SRC_C:%.c=%.o)
 OBJ+=$(ASM:%.s=%.o)
 
 
 all: directories hex
 	@echo "*** DONE ***"
+	$(SIZE) $(OUTPUT_DIR)/main.elf
 
 directories:
 	@echo "*** CREATE DIRECTORIES ***"
@@ -54,6 +57,10 @@ hex: main.elf
 main.elf: $(OBJ)
 	@echo "*** LINK ***"
 	$(LD) $(LDFLAGS) $(OBJ) -o $(OUTPUT_DIR)/main.elf
+
+%.o: %.cpp
+	@echo "*** COMPILE C++ ***"
+	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.c
 	@echo "*** COMPILE C ***"

@@ -138,8 +138,11 @@ void delay(uint32_t ticks)
   while(sysTickCount_);
 }
 
-void SysTick_Handler()
+extern "C"
 {
-  if (sysTickCount_)
-    --sysTickCount_;
+  void SysTick_Handler()
+  {
+    if (sysTickCount_)
+      --sysTickCount_;
+  }
 }
