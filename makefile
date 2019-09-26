@@ -16,6 +16,7 @@ LDFLAGS += -mthumb
 LDFLAGS += $(LDSCRIPT)
 # включает удаление неиспользуемых секций
 LDFLAGS += -Wl,--gc-section
+# Без этого флага не собирается с помощью g++
 #LDFLAGS += -fno-exceptions
 
 CFLAGS += -mcpu=cortex-m3
@@ -23,6 +24,7 @@ CFLAGS += -mlittle-endian
 CFLAGS += -mthumb
 # Добавление отладочной информации
 CFLAGS += -g
+# Без этого флага не собирается с помощью g++
 #CFLAGS += -fno-exceptions
 CFLAGS += -DSTM32F103xB
 CFLAGS += $(INC)
@@ -38,15 +40,19 @@ OBJ=$(SRC_C:%.c=%.o)
 OBJ+=$(ASM:%.s=%.o)
 
 
-all: hex
+all: directories hex
+	@echo "*** DONE ***"
+
+directories:
+	@echo "*** CREATE DIRECTORIES ***"
+	@mkdir -p $(OUTPUT_DIR)
 
 hex: main.elf
-	@echo "*** HEX ***"
+	@echo "*** MAKE HEX ***"
 	$(CP) -Oihex $(OUTPUT_DIR)/main.elf $(OUTPUT_DIR)/main.hex
 
 main.elf: $(OBJ)
 	@echo "*** LINK ***"
-	@mkdir -p $(OUTPUT_DIR)
 	$(LD) $(LDFLAGS) $(OBJ) -o $(OUTPUT_DIR)/main.elf
 
 %.o: %.c
