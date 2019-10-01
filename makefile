@@ -66,7 +66,8 @@ CFLAGS += $(INC)
 
 all: directories clean clean_target hex
 	@echo "*** DONE ***"
-	@$(SIZE) $(TARGET).elf
+	@$(SIZE) -A -x $(TARGET).elf
+	@$(SIZE) -B -x $(TARGET).elf
 
 directories:
 	@echo "*** CREATE DIRECTORIES ***"

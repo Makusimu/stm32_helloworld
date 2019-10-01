@@ -21,6 +21,28 @@ Hello, World!!!
   - [ ] Выводить изменение в сравнении с предыдущей компиляцией
   - [ ] Выводить посчитанные FLASH и RAM
 - [ ] Скопировать флаги от сюда http://fatlortroll.blogspot.com/2016/10/makefile-stm32-v2.html
+- [ ] Скопировать флаги от сюда http://mmote.ru/stm32f1x-makefile
+- [ ] Скопировать флаги от сюда https://github.com/robots/STM32/blob/master/dtmf/Makefile
+  - -msoft-float
+  - -ffunction-sections
+  - -fdata-sections
+  - -mfix-cortex-m3-ldrd
+  - -fomit-frame-pointer
+  - -mapcs-frame
+  - -mlong-calls
+  - -mapcs-frame
+  - -Wimplicit -Wcast-align -Wpointer-arith
+  - -Wredundant-decls -Wshadow -Wcast-qual -Wcast-align
+  - -pedantic
+  - -Wa,-adhlns=
+  - -MD -MP -MF
+  - -Wnested-externs  (flags only for C)
+  - -fno-rtti -fno-exceptions  (flags only for C++)
+  - # Link with the GNU C++ stdlib.
+  - #CPLUSPLUS_LIB = -lstdc++ (LDFLAGS += $(CPLUSPLUS_LIB))
+  - LDFLAGS += -lc -lgcc 
+  - LDFLAGS = -nostartfiles -Wl,--cref
+  - MATH_LIB = -lm (LDFLAGS += $(MATH_LIB))
 
 ### Отладка
 
