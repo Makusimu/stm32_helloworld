@@ -4,17 +4,18 @@ SRC_DIR = $(ROOT_DIR)/src
 SYSTEM_DIR = $(ROOT_DIR)/system
 
 OBJ_DIR = $(ROOT_DIR)/obj
+OUTPUT_DIR = $(ROOT_DIR)/bin
 
 ifeq ($(CONFIG), DEBUG)
-OUTPUT_DIR = $(ROOT_DIR)/debug
+TARGET = $(OUTPUT_DIR)/main_debug
 OFLAGS += -ggdb3
 OFLAGS += -O0
 else
-OUTPUT_DIR = $(ROOT_DIR)/release
+TARGET = $(OUTPUT_DIR)/main
 OFLAGS += -Os
 endif
 
-TARGET = $(OUTPUT_DIR)/main
+
 
 #region TOOLCHAIN
 TOOLCHAIN_DIR = ../../programs/arm-gcc/bin
