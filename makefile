@@ -1,6 +1,6 @@
-
 ROOT_DIR = .
 SRC_DIR = $(ROOT_DIR)/src
+EMBEDDED_LIB_DIR = $(ROOT_DIR)/embedded
 SYSTEM_DIR = $(ROOT_DIR)/system
 
 OBJ_DIR = $(ROOT_DIR)/obj
@@ -14,7 +14,6 @@ else
 TARGET = $(OUTPUT_DIR)/main
 OFLAGS += -Os
 endif
-
 
 
 #region TOOLCHAIN
@@ -37,16 +36,25 @@ MCUFLAGS += -mthumb
 #endregion
 
 #region SOURCES
-INC += -I$(SYSTEM_DIR)/inc
-INC += -I$(SRC_DIR)/inc
+INC += $(SYSTEM_DIR)/inc
+INC += $(SRC_DIR)/inc
+INC += $(EMBEDDED_LIB_DIR)/*/inc
+INC := $(addprefix -I, $(wildcard $(INC)))
 
-SRC_CPP += $(SRC_DIR)/main.cpp
-SRC_C += $(SYSTEM_DIR)/src/system_stm32f1xx.c
-ASM += $(SYSTEM_DIR)/startup_stm32f103xb.s
+SRC_DIRS += $(SYSTEM_DIR)
+SRC_DIRS += $(SYSTEM_DIR)/src
+SRC_DIRS += $(SRC_DIR)
+SRC_DIRS += $(SRC_DIR)/src/*
+SRC_DIRS += $(EMBEDDED_LIB_DIR)/*/src/*
 
-OBJ = $(SRC_CPP:%.cpp=%.o)
-OBJ += $(SRC_C:%.c=%.o)
-OBJ += $(ASM:%.s=%.o)
+ASM_FILES := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
+C_FILES := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
+CPP_FILES := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
+
+OBJ_FILES := $(ASM_FILES:%.s=%.o)
+OBJ_FILES += $(C_FILES:%.c=%.o)
+OBJ_FILES += $(CPP_FILES:%.cpp=%.o)
+
 #endregion
 
 #region FLAGS
@@ -56,11 +64,13 @@ LDFLAGS += -Wl,--gc-section
 LDFLAGS += -Wl,-Map=$(TARGET).map
 LDFLAGS += --specs=nano.specs
 LDFLAGS += --specs=nosys.specs
+LDFLAGS += -pipe
 
 CFLAGS += $(MCUFLAGS)
 CFLAGS += $(OFLAGS)
 CFLAGS += -fno-exceptions
 CFLAGS += -Wall -Wextra -Werror
+CFLAGS += -pipe
 CFLAGS += $(DEFS)
 CFLAGS += $(INC)
 #endregion
@@ -68,7 +78,7 @@ CFLAGS += $(INC)
 all: directories clean clean_target hex
 	@echo "*** DONE ***"
 	@$(SIZE) -A -x $(TARGET).elf
-	@$(SIZE) -B -x $(TARGET).elf
+	@$(SIZE) -B  $(TARGET).elf
 
 directories:
 	@echo "*** CREATE DIRECTORIES ***"
@@ -79,13 +89,13 @@ hex: elf
 	@echo "*** MAKE HEX ***"
 	@$(CP) -Oihex $(TARGET).elf $(TARGET).hex
 
-elf: $(OBJ)
+elf: $(OBJ_FILES)
 	@echo "*** LINK ***"
-	@$(LD) $(LDFLAGS) $(OBJ) -o $(TARGET).elf
+	@$(LD) $(LDFLAGS) $(OBJ_FILES) -o $(TARGET).elf
 
 %.o: %.cpp
 	@echo "*** COMPILE C++ ***"
-	@$(CC) $(CFLAGS) -std=c++11 -c $< -o $@
+	@$(CC) $(CFLAGS) -std=c++17 -c $< -o $@
 
 %.o: %.c
 	@echo "*** COMPILE C ***"
@@ -97,8 +107,16 @@ elf: $(OBJ)
 
 clean:
 	@echo "*** CLEAN ***"
-	@rm -f $(OBJ)
+	@rm -f $(OBJ_FILES)
 
 clean_target:
 	@echo "*** CLEAN TARGET ***"
 	@rm -f $(TARGET).elf $(TARGET).hex $(TARGET).map
+
+view:
+	@echo $(INC)
+	@echo $(SRC_DIRS)
+	@echo $(S_FILES)
+	@echo $(C_FILES)
+	@echo $(CPP_FILES)
+	@echo $(OBJ_FILES)

@@ -2,3 +2,4 @@
 *.hex
 *.o
 *.map
+.vscode/*.DB*

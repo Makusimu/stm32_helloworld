@@ -1,11 +1,14 @@
 {
     "env": {
         "project-includes": [
-            "${workspaceFolder}",
             "${workspaceFolder}/system/inc",
-            "x:/#Embedded/programs/arm-gcc/arm-none-eabi/include"
+            "${workspaceFolder}/src/inc",
+            "${workspaceFolder}/embedded/mcu/inc",
+            "${workspaceFolder}/embedded/sensor/inc",
+            "${workspaceFolder}/embedded/device/inc",
+            "${workspaceFolder}/../../programs/arm-gcc/arm-none-eabi/include"
         ],
-        "arm-gcc": "x:/#Embedded/programs/arm-gcc"
+        "arm-gcc": "${workspaceFolder}/../../programs/arm-gcc/bin"
     },
     "configurations": [
         {
@@ -25,7 +28,7 @@
                     "${workspaceFolder}"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
-                "databaseFilename": ""
+                "databaseFilename": "${workspaceFolder}/.vscode/temp.db"
             }
         }
     ],

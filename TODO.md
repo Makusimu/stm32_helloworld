@@ -13,16 +13,20 @@ Hello, World!!!
 
 ### Сборка
 
-- [ ] Все временные файлы компиляции складывать в папку __obj__ (https://habr.com/ru/post/111691/)
+- [ ] Все временные файлы компиляции складывать в папку __obj__ 
+  - (https://habr.com/ru/post/111691/) 
+  - (https://www.opennet.ru/docs/RUS/make_compile/make-8.html) 
+  - (http://www.cyberforum.ru/c-linux/thread696887.html)
 - [x] Скомпилированные файлы __*.elf__ и __*.hex__ складывать в папку __release__
 - [x] Перевести проект на __C++__
-- [ ] Автоматический поиск всех __*.s__, __*.c__ и __*.cpp__ файлов
+- [x] Автоматический поиск всех __*.s__, __*.c__ и __*.cpp__ файлов
 - [ ] При выводе размеров используемой памяти (FLASH, RAM)
   - [ ] Выводить изменение в сравнении с предыдущей компиляцией
   - [ ] Выводить посчитанные FLASH и RAM
-- [ ] Скопировать флаги от сюда http://fatlortroll.blogspot.com/2016/10/makefile-stm32-v2.html
-- [ ] Скопировать флаги от сюда http://mmote.ru/stm32f1x-makefile
-- [ ] Скопировать флаги от сюда https://github.com/robots/STM32/blob/master/dtmf/Makefile
+- [ ] Разобраться с флагами компиляции
+  - http://fatlortroll.blogspot.com/2016/10/makefile-stm32-v2.html
+  - http://mmote.ru/stm32f1x-makefile
+  - https://github.com/robots/STM32/blob/master/dtmf/Makefile
   - -msoft-float
   - -ffunction-sections
   - -fdata-sections
