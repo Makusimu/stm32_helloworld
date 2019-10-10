@@ -13,7 +13,7 @@ Hello, World!!!
 
 ### Сборка
 
-- [ ] Все временные файлы компиляции складывать в папку __obj__ 
+- [x] Все временные файлы компиляции складывать в папку __obj__ 
   - (https://habr.com/ru/post/111691/) 
   - (https://www.opennet.ru/docs/RUS/make_compile/make-8.html) 
   - (http://www.cyberforum.ru/c-linux/thread696887.html)
@@ -37,7 +37,6 @@ Hello, World!!!
   - -mapcs-frame
   - -Wimplicit -Wcast-align -Wpointer-arith
   - -Wredundant-decls -Wshadow -Wcast-qual -Wcast-align
-  - -pedantic
   - -Wa,-adhlns=
   - -MD -MP -MF
   - -Wnested-externs  (flags only for C)

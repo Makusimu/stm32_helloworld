@@ -1,10 +1,9 @@
-ROOT_DIR = .
-SRC_DIR = $(ROOT_DIR)/src
-EMBEDDED_LIB_DIR = $(ROOT_DIR)/embedded
-SYSTEM_DIR = $(ROOT_DIR)/system
+SRC_DIR = src
+EMBEDDED_LIB_DIR = embedded
+SYSTEM_DIR = system
 
-OBJ_DIR = $(ROOT_DIR)/obj
-OUTPUT_DIR = $(ROOT_DIR)/bin
+OBJ_DIR = obj
+OUTPUT_DIR = bin
 
 ifeq ($(CONFIG), DEBUG)
 TARGET = $(OUTPUT_DIR)/main_debug
@@ -54,6 +53,7 @@ CPP_FILES := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
 OBJ_FILES := $(ASM_FILES:%.s=%.o)
 OBJ_FILES += $(C_FILES:%.c=%.o)
 OBJ_FILES += $(CPP_FILES:%.cpp=%.o)
+OBJ_FILES := $(addprefix $(OBJ_DIR)/, $(OBJ_FILES))
 
 #endregion
 
@@ -83,7 +83,7 @@ all: directories clean clean_target hex
 directories:
 	@echo "*** CREATE DIRECTORIES ***"
 	@mkdir -p $(OUTPUT_DIR)
-	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(sort $(dir $(OBJ_FILES)))
 
 hex: elf
 	@echo "*** MAKE HEX ***"
@@ -93,15 +93,15 @@ elf: $(OBJ_FILES)
 	@echo "*** LINK ***"
 	@$(LD) $(LDFLAGS) $(OBJ_FILES) -o $(TARGET).elf
 
-%.o: %.cpp
+$(OBJ_DIR)/%.o: %.cpp
 	@echo "*** COMPILE C++ ***"
 	@$(CC) $(CFLAGS) -std=c++17 -c $< -o $@
 
-%.o: %.c
+$(OBJ_DIR)/%.o: %.c
 	@echo "*** COMPILE C ***"
 	@$(CC) $(CFLAGS) -std=c11 -c $< -o $@
 
-%.o: %.s
+$(OBJ_DIR)/%.o: %.s
 	@echo "*** COMPILE ASM ***"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
@@ -116,7 +116,7 @@ clean_target:
 view:
 	@echo $(INC)
 	@echo $(SRC_DIRS)
-	@echo $(S_FILES)
+	@echo $(ASM_FILES)
 	@echo $(C_FILES)
 	@echo $(CPP_FILES)
 	@echo $(OBJ_FILES)
