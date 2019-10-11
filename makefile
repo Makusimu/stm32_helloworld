@@ -2,17 +2,19 @@ SRC_DIR = src
 EMBEDDED_LIB_DIR = embedded
 SYSTEM_DIR = system
 
-OBJ_DIR = obj
-OUTPUT_DIR = bin
 
 ifeq ($(CONFIG), DEBUG)
-TARGET = $(OUTPUT_DIR)/main_debug
+OBJ_DIR = bin/obj/debug
+OUTPUT_DIR = bin/debug
 OFLAGS += -ggdb3
 OFLAGS += -O0
 else
-TARGET = $(OUTPUT_DIR)/main
+OBJ_DIR = bin/obj/release
+OUTPUT_DIR = bin/release
 OFLAGS += -Os
 endif
+
+TARGET = $(OUTPUT_DIR)/main
 
 
 #region TOOLCHAIN
@@ -22,6 +24,8 @@ CC = $(TOOLCHAIN)gcc
 LD = $(TOOLCHAIN)gcc
 CP = $(TOOLCHAIN)objcopy
 SIZE = $(TOOLCHAIN)size
+OBJDUMP = $(TOOLCHAIN)objdump
+NM = $(TOOLCHAIN)nm
 #endregion
 
 #region PLATFORM
@@ -75,9 +79,11 @@ CFLAGS += $(DEFS)
 CFLAGS += $(INC)
 #endregion
 
-all: directories clean clean_target hex
+all: directories clean clean_target hex lss sym size
 	@echo "*** DONE ***"
-	@$(SIZE) -A -x $(TARGET).elf
+
+size:
+	@$(SIZE) -A -x $(TARGET).elf > $(TARGET).size
 	@$(SIZE) -B  $(TARGET).elf
 
 directories:
@@ -89,20 +95,26 @@ hex: elf
 	@echo "*** MAKE HEX ***"
 	@$(CP) -Oihex $(TARGET).elf $(TARGET).hex
 
+lss: elf
+	@$(OBJDUMP) -h -S -C -r $(TARGET).elf > $(TARGET).lss
+
+sym: elf
+	@$(NM) -n $(TARGET).elf > $(TARGET).sym
+
 elf: $(OBJ_FILES)
 	@echo "*** LINK ***"
 	@$(LD) $(LDFLAGS) $(OBJ_FILES) -o $(TARGET).elf
 
 $(OBJ_DIR)/%.o: %.cpp
-	@echo "*** COMPILE C++ ***"
+	@echo "*** COMPILE" $< "***"
 	@$(CC) $(CFLAGS) -std=c++17 -c $< -o $@
 
 $(OBJ_DIR)/%.o: %.c
-	@echo "*** COMPILE C ***"
+	@echo "*** COMPILE" $< "***"
 	@$(CC) $(CFLAGS) -std=c11 -c $< -o $@
 
 $(OBJ_DIR)/%.o: %.s
-	@echo "*** COMPILE ASM ***"
+	@echo "*** COMPILE" $< "***"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
@@ -111,7 +123,7 @@ clean:
 
 clean_target:
 	@echo "*** CLEAN TARGET ***"
-	@rm -f $(TARGET).elf $(TARGET).hex $(TARGET).map
+	@rm -f $(TARGET).elf $(TARGET).hex $(TARGET).map $(TARGET).lss $(TARGET).sym $(TARGET).size
 
 view:
 	@echo $(INC)

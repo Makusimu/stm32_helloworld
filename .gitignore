@@ -2,4 +2,7 @@
 *.hex
 *.o
 *.map
+*.lss
+*.sym
+*.size
 .vscode/*.DB*
