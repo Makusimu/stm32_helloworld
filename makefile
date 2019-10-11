@@ -8,10 +8,12 @@ OBJ_DIR = bin/obj/debug
 OUTPUT_DIR = bin/debug
 OFLAGS += -ggdb3
 OFLAGS += -O0
+OFLAGS += -fno-omit-frame-pointer
 else
 OBJ_DIR = bin/obj/release
 OUTPUT_DIR = bin/release
 OFLAGS += -Os
+OFLAGS += -fomit-frame-pointer
 endif
 
 TARGET = $(OUTPUT_DIR)/main
@@ -21,6 +23,7 @@ TARGET = $(OUTPUT_DIR)/main
 TOOLCHAIN_DIR = ../../programs/arm-gcc/bin
 TOOLCHAIN = $(TOOLCHAIN_DIR)/arm-none-eabi-
 CC = $(TOOLCHAIN)gcc
+CXX = $(TOOLCHAIN)g++
 LD = $(TOOLCHAIN)gcc
 CP = $(TOOLCHAIN)objcopy
 SIZE = $(TOOLCHAIN)size
@@ -34,6 +37,7 @@ LDSCRIPT = -T$(SYSTEM_DIR)/stm32f103xb.ld
 DEFS += -DSTM32F103xB
 
 MCUFLAGS += -mcpu=cortex-m3
+MCUFLAGS += -mfix-cortex-m3-ldrd
 MCUFLAGS += -mlittle-endian
 MCUFLAGS += -mthumb
 #endregion
@@ -64,19 +68,26 @@ OBJ_FILES := $(addprefix $(OBJ_DIR)/, $(OBJ_FILES))
 #region FLAGS
 LDFLAGS += $(MCUFLAGS)
 LDFLAGS += $(LDSCRIPT)
-LDFLAGS += -Wl,--gc-section
-LDFLAGS += -Wl,-Map=$(TARGET).map
+LDFLAGS += -Wl,--gc-sections
+LDFLAGS += -Wl,-Map=$(TARGET).map -Wl,--cref
 LDFLAGS += --specs=nano.specs
 LDFLAGS += --specs=nosys.specs
 LDFLAGS += -pipe
 
 CFLAGS += $(MCUFLAGS)
 CFLAGS += $(OFLAGS)
-CFLAGS += -fno-exceptions
-CFLAGS += -Wall -Wextra -Werror
-CFLAGS += -pipe
 CFLAGS += $(DEFS)
 CFLAGS += $(INC)
+CFLAGS += -Wall -Wextra -Werror
+CFLAGS += -pipe
+CFLAGS += -ffunction-sections -fdata-sections
+CFLAGS += -mlong-calls
+
+CCFLAGS += -std=c11
+
+CXXFLAGS += -std=c++17
+CXXFLAGS += -fno-rtti
+CXXFLAGS += -fno-exceptions
 #endregion
 
 all: directories clean clean_target hex lss sym size
@@ -107,11 +118,11 @@ elf: $(OBJ_FILES)
 
 $(OBJ_DIR)/%.o: %.cpp
 	@echo "*** COMPILE" $< "***"
-	@$(CC) $(CFLAGS) -std=c++17 -c $< -o $@
+	@$(CXX) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/%.o: %.c
 	@echo "*** COMPILE" $< "***"
-	@$(CC) $(CFLAGS) -std=c11 -c $< -o $@
+	@$(CC) $(CFLAGS) $(CCFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/%.o: %.s
 	@echo "*** COMPILE" $< "***"
