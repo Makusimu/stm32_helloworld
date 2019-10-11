@@ -1,7 +1,7 @@
 #include "rcc/rcc.h"
 #include "stm32f1xx.h"
 
-int init_hse();
+static int init_hse();
 
 void init_rcc()
 {
@@ -11,7 +11,7 @@ void init_rcc()
   SysTick_Config(SystemCoreClock/1000);
 }
 
-int init_hse()
+static int init_hse()
 {
   SET_BIT(RCC->CR, RCC_CR_HSEON); //Запускаем генератор HSE
 

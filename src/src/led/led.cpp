@@ -1,12 +1,17 @@
 #include "led/led.h"
 #include "stm32f1xx.h"
 
+enum class LedState
+{
+  ON, OFF
+};
+
 LedState ledState_;
-GPIO_TypeDef *port = GPIOC;
+GPIO_TypeDef * const port = GPIOC;
 
 void toggle_led()
 {
-  if(ledState_ == ON)
+  if(ledState_ == LedState::ON)
     led_off();
   else
     led_on();
@@ -16,13 +21,13 @@ void led_on()
 {
   SET_BIT(port->BSRR, GPIO_BSRR_BS13);
 
-  ledState_ = ON;
+  ledState_ = LedState::ON;
 }
 
 void led_off()
 {
   SET_BIT(port->BSRR, GPIO_BSRR_BR13);
-  ledState_ = OFF;
+  ledState_ = LedState::OFF;
 }
 
 void init_led()
