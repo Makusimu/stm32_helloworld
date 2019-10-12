@@ -1,4 +1,8 @@
+#pragma once
+#include <stdint.h>
 
 
-
-void init_rcc();
+namespace rcc
+{
+  void init_hse8_72();
+}
