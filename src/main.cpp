@@ -2,7 +2,6 @@
 #include "stm32f1xx.h"
 #include "led/led.h"
 #include "rcc/rcc.h"
-#include "rcc/systick.h"
 
 // LED: PC13
 

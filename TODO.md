@@ -9,6 +9,9 @@ Hello, World!!!
   - [x] Функции включения/отключения светодиода
 - [x] Настройка тактирования
 - [x] Использование таймера SysTick для формирования задержек
+- [ ] Работа с портами ввода вывода
+  - http://easyelectronics.ru/rabota-s-portami-vvoda-vyvoda-mikrokontrollerov-na-si.html
+  - https://habr.com/ru/post/459204/
 
 ### Сборка
 
