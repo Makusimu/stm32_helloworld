@@ -11,7 +11,9 @@ Hello, World!!!
 - [x] Использование таймера SysTick для формирования задержек
 - [ ] Работа с портами ввода вывода
   - http://easyelectronics.ru/rabota-s-portami-vvoda-vyvoda-mikrokontrollerov-na-si.html
+- [x] Работа с портами ввода вывода
   - https://habr.com/ru/post/459204/
+- [ ] Метапрограммирование при работе с RCC и SysTick
 
 ### Сборка
 

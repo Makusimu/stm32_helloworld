@@ -8,9 +8,7 @@
 
 static void init_led();
 
-
-
-using PC13 = gpio::Pin<GPIOC_BASE, 13>;
+using Led = gpio::PC13;
 
 int main()
 {
@@ -21,7 +19,7 @@ int main()
 
   while(1)
   {
-    PC13::Toggle();
+    Led::Toggle();
     rcc::systick::delay(500);
   }
   return 0;
@@ -30,7 +28,6 @@ int main()
 
 void init_led()
 {
-  SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPCEN);
-  CLEAR_BIT(GPIOC->CRH, GPIO_CRH_MODE13|GPIO_CRH_CNF13);
-  SET_BIT(GPIOC->CRH, GPIO_CRH_MODE13_0);
+  Led::InitPortClock();
+  Led::Init<gpio::PinMode::PushPull>();
 }
