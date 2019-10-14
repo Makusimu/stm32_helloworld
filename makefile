@@ -34,7 +34,7 @@ NM = $(TOOLCHAIN)nm
 #region PLATFORM
 LDSCRIPT = -T$(SYSTEM_DIR)/stm32f103xb.ld
 
-DEFS += -DSTM32F103xB
+MCU = STM32F103xB
 
 MCUFLAGS += -mcpu=cortex-m3
 MCUFLAGS += -mfix-cortex-m3-ldrd
@@ -73,6 +73,9 @@ LDFLAGS += -Wl,-Map=$(TARGET).map -Wl,--cref
 LDFLAGS += --specs=nano.specs
 LDFLAGS += --specs=nosys.specs
 LDFLAGS += -pipe
+
+DEFS += -D$(MCU)
+DEFS += -D__forceinline="__attribute__((always_inline))"
 
 CFLAGS += $(MCUFLAGS)
 CFLAGS += $(OFLAGS)
