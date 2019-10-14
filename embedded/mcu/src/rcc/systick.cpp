@@ -2,28 +2,22 @@
 #include <stdint.h>
 #include "stm32f1xx.h"
 
-namespace rcc::systick
+namespace rcc
 {
   static volatile uint32_t sysTickCount_ = 0;
 }
 
-void rcc::systick::init_1ms()
+void rcc::delay(uint32_t ticks)
 {
-  SystemCoreClockUpdate();
-  SysTick_Config(SystemCoreClock/1000);
-}
-
-void rcc::systick::delay(uint32_t ticks)
-{
-  sysTickCount_ = ticks;
-  while(sysTickCount_);
+  rcc::sysTickCount_ = ticks;
+  while(rcc::sysTickCount_);
 }
 
 extern "C"
 {
   void SysTick_Handler()
   {
-    if (rcc::systick::sysTickCount_)
-      --rcc::systick::sysTickCount_;
+    if (rcc::sysTickCount_)
+      --rcc::sysTickCount_;
   }
 }

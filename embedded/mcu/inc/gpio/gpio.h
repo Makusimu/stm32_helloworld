@@ -9,9 +9,6 @@ namespace gpio
     PushPull
   };
 
-  template<uint32_t addr, uint32_t pinNum>
-  struct Pin;
-
   template<uint32_t addr>
   struct Port
   {
@@ -32,7 +29,6 @@ namespace gpio
     template<uint32_t pinNum>
     struct Pin
     {
-      using Registers = GPIO_TypeDef;
       using port = gpio::Port<addr>;
       using self = port::Pin<pinNum>;
 
@@ -44,7 +40,7 @@ namespace gpio
       template<gpio::PinMode mode>
       __forceinline static void Init()
       {
-        Registers *GpioPort{reinterpret_cast<Registers*>(addr)};
+        GPIO_TypeDef *GpioPort{reinterpret_cast<GPIO_TypeDef*>(addr)};
         if constexpr (mode == gpio::PinMode::PushPull)
         {
           constexpr uint32_t modePos = get_ModePos();
@@ -73,19 +69,19 @@ namespace gpio
 
       __forceinline static bool IsHigh()
       {
-        Registers *GpioPort{reinterpret_cast<Registers*>(addr)};
+        GPIO_TypeDef *GpioPort{reinterpret_cast<GPIO_TypeDef*>(addr)};
         return READ_BIT(GpioPort->ODR, 1 << pinNum) == (1 << pinNum);
       }
 
       __forceinline static void High()
       {
-        Registers *GpioPort{reinterpret_cast<Registers*>(addr)};
+        GPIO_TypeDef *GpioPort{reinterpret_cast<GPIO_TypeDef*>(addr)};
         SET_BIT(GpioPort->BSRR, 1 << pinNum);
       }
 
       __forceinline static void Low()
       {
-        Registers *GpioPort{reinterpret_cast<Registers*>(addr)};
+        GPIO_TypeDef *GpioPort{reinterpret_cast<GPIO_TypeDef*>(addr)};
         SET_BIT(GpioPort->BRR, 1 << pinNum);
       }
 

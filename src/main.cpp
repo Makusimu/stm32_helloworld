@@ -3,9 +3,6 @@
 #include "rcc/rcc.h"
 #include "gpio/gpio.h"
 
-// LED: PC13
-
-
 static void init_led();
 
 using Led = gpio::PC13;
@@ -13,14 +10,14 @@ using Led = gpio::PC13;
 int main()
 {
   rcc::init_hse8_72();
-  rcc::systick::init_1ms();
+  rcc::Systick::Init<common::Period::ms>();
 
   init_led();  
 
   while(1)
   {
     Led::Toggle();
-    rcc::systick::delay(500);
+    rcc::delay(500);
   }
   return 0;
 }
