@@ -7,7 +7,7 @@ namespace rcc
   static volatile uint32_t sysTickCount_ = 0;
 }
 
-void rcc::delay(uint32_t ticks)
+void rcc::Systick::Delay(uint32_t ticks)
 {
   rcc::sysTickCount_ = ticks;
   while(rcc::sysTickCount_);

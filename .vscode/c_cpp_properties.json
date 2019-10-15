@@ -18,7 +18,8 @@
                 "${project-includes}"
             ],
             "defines": [
-                "STM32F103xB"
+                "STM32F103xB",
+                "__forceinline=\"__attribute__((always_inline))\""
             ],
             "compilerPath": "${arm-gcc}",
             "cStandard": "c11",

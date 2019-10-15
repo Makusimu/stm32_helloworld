@@ -16,14 +16,16 @@ namespace gpio
     {
       if constexpr (addr == GPIOA_BASE)
         SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPAEN);
-      if constexpr (addr == GPIOB_BASE)
+      else if constexpr (addr == GPIOB_BASE)
         SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPBEN);
-      if constexpr (addr == GPIOC_BASE)
+      else if constexpr (addr == GPIOC_BASE)
         SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPCEN);
-      if constexpr (addr == GPIOD_BASE)
+      else if constexpr (addr == GPIOD_BASE)
         SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPDEN);
-      if constexpr (addr == GPIOE_BASE)
+      else if constexpr (addr == GPIOE_BASE)
         SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPEEN);
+      else
+        throw "Not implemented";
     }
 
     template<uint32_t pinNum>
@@ -57,6 +59,8 @@ namespace gpio
             SET_BIT(GpioPort->CRL, (0x1UL << modePos));
           }
         }
+        else
+          throw "Not implemented";
       }
 
       __forceinline static void Toggle()
