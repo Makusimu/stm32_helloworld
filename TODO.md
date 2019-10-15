@@ -13,7 +13,8 @@ Hello, World!!!
   - http://easyelectronics.ru/rabota-s-portami-vvoda-vyvoda-mikrokontrollerov-na-si.html
 - [x] Работа с портами ввода вывода
   - https://habr.com/ru/post/459204/
-- [ ] Метапрограммирование при работе с RCC и SysTick
+- [x] Метапрограммирование при работе с RCC и SysTick
+- [ ] Оценить возможность передачи структур в качестве аргументов в другие структуры (GpioPin => LedDriver)
 
 ### Сборка
 
@@ -32,3 +33,5 @@ Hello, World!!!
 ### Отладка
 
 - [ ] OpenOCD
+- [ ] stlink
+- [ ] BlackMagic
