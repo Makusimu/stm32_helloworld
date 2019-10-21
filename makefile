@@ -93,7 +93,7 @@ CXXFLAGS += -fno-rtti
 CXXFLAGS += -fno-exceptions
 #endregion
 
-all: directories clean clean_target hex lss sym size
+all: directories clean clean_target hex bin lss sym size
 	@echo "*** DONE ***"
 
 size:
@@ -108,6 +108,10 @@ directories:
 hex: elf
 	@echo "*** MAKE HEX ***"
 	@$(CP) -Oihex $(TARGET).elf $(TARGET).hex
+
+bin: elf
+	@echo "*** MAKE BIN ***"
+	@$(CP) $(TARGET).elf $(TARGET).bin -O binary
 
 lss: elf
 	@$(OBJDUMP) -h -S -C -r $(TARGET).elf > $(TARGET).lss
@@ -137,7 +141,7 @@ clean:
 
 clean_target:
 	@echo "*** CLEAN TARGET ***"
-	@rm -f $(TARGET).elf $(TARGET).hex $(TARGET).map $(TARGET).lss $(TARGET).sym $(TARGET).size
+	@rm -f $(TARGET).elf $(TARGET).hex $(TARGET).bin $(TARGET).map $(TARGET).lss $(TARGET).sym $(TARGET).size
 
 view:
 	@echo $(INC)
