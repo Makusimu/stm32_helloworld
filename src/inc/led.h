@@ -4,7 +4,7 @@
 template<class Pin>
 struct Led
 {
-  static void Toggle()
+  __forceinline static void Toggle()
   {
     Pin::Toggle();
   }
