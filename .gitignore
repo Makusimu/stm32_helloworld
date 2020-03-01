@@ -6,4 +6,5 @@
 *.lss
 *.sym
 *.size
+*.su
 .vscode/*.DB*

@@ -37,8 +37,6 @@ LDSCRIPT = -T$(SYSTEM_DIR)/stm32f103xb.ld
 MCU = STM32F103xB
 
 MCUFLAGS += -mcpu=cortex-m3
-MCUFLAGS += -mfix-cortex-m3-ldrd
-MCUFLAGS += -mlittle-endian
 MCUFLAGS += -mthumb
 #endregion
 
@@ -62,17 +60,20 @@ OBJ_FILES := $(ASM_FILES:%.s=%.o)
 OBJ_FILES += $(C_FILES:%.c=%.o)
 OBJ_FILES += $(CPP_FILES:%.cpp=%.o)
 OBJ_FILES := $(addprefix $(OBJ_DIR)/, $(OBJ_FILES))
-
 #endregion
 
 #region FLAGS
 LDFLAGS += $(MCUFLAGS)
 LDFLAGS += $(LDSCRIPT)
 LDFLAGS += -Wl,--gc-sections
-LDFLAGS += -Wl,-Map=$(TARGET).map -Wl,--cref
+LDFLAGS += -Wl,-Map=$(TARGET).map -Wl,--cref	#Настройки создания map файла
 LDFLAGS += --specs=nano.specs
 LDFLAGS += --specs=nosys.specs
-LDFLAGS += -pipe
+#LDFLAGS += -flto
+#LDFLAGS += -nostartfiles
+#LDFLAGS += -nostdlib
+#LDFLAGS += -nolibc
+#LDFLAGS += -nodefaultlibs
 
 DEFS += -D$(MCU)
 DEFS += -D__forceinline="__attribute__((always_inline))"
@@ -82,15 +83,21 @@ CFLAGS += $(OFLAGS)
 CFLAGS += $(DEFS)
 CFLAGS += $(INC)
 CFLAGS += -Wall -Wextra -Werror
-CFLAGS += -pipe
 CFLAGS += -ffunction-sections -fdata-sections
-CFLAGS += -mlong-calls
+CFLAGS += --specs=nano.specs
+#CFLAGS += -flto
+CFLAGS += -fstack-usage
 
-CCFLAGS += -std=c11
+ASMFLAGS += -x assembler-with-cpp
+
+#CCFLAGS += -std=c11
+CCFLAGS += -std=gnu11
 
 CXXFLAGS += -std=c++17
+#CXXFLAGS += -std=gnu++14
 CXXFLAGS += -fno-rtti
 CXXFLAGS += -fno-exceptions
+CXXFLAGS += -fno-threadsafe-statics -fno-use-cxa-atexit
 #endregion
 
 all: directories clean clean_target hex bin lss sym size
@@ -133,7 +140,7 @@ $(OBJ_DIR)/%.o: %.c
 
 $(OBJ_DIR)/%.o: %.s
 	@echo "*** COMPILE" $< "***"
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) $(ASMFLAGS) -c $< -o $@
 
 clean:
 	@echo "*** CLEAN ***"
