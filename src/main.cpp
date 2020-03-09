@@ -11,7 +11,7 @@ int main()
 
   using port13 = gpio::PC13;
   port13::InitPortClock();
-  port13::Init<gpio::PinMode::PushPull>();
+  port13::Init<gpio::PinMode::PushPull, gpio::PinSpeed::Speed_2MHz>();
 
   using LedControl = Led<port13>;
 

@@ -6,7 +6,12 @@ namespace gpio
 {
   enum class PinMode
   {
-    PushPull
+    PushPull, AF_PushPull
+  };
+
+  enum class PinSpeed
+  {
+    Speed_10MHz, Speed_2MHz, Speed_50MHz
   };
 
   template<uint32_t addr>
@@ -39,25 +44,34 @@ namespace gpio
         port::InitClock();
       }
 
-      template<gpio::PinMode mode>
+      template<gpio::PinMode mode, gpio::PinSpeed speed>
       __forceinline static void Init()
       {
         GPIO_TypeDef *GpioPort{reinterpret_cast<GPIO_TypeDef*>(addr)};
+
+        constexpr uint32_t modePos = get_ModePos();
+        constexpr uint32_t cnfPos = get_CnfPos();
+
+        if constexpr (pinNum > 7)
+          CLEAR_BIT(GpioPort->CRH, (0x3UL << modePos)|(0x3UL << cnfPos));
+        else
+          CLEAR_BIT(GpioPort->CRL, (0x3UL << modePos)|(0x3UL << cnfPos));
+
         if constexpr (mode == gpio::PinMode::PushPull)
         {
-          constexpr uint32_t modePos = get_ModePos();
-          constexpr uint32_t cnfPos = get_CnfPos();
-
+          constexpr uint32_t speedVal = get_SpeedVal<speed>();
           if constexpr (pinNum > 7)
-          {
-            CLEAR_BIT(GpioPort->CRH, (0x3UL << modePos)|(0x3UL << cnfPos));
-            SET_BIT(GpioPort->CRH, (0x1UL << modePos));
-          }
+            SET_BIT(GpioPort->CRH, (speedVal << modePos));
           else
-          {
-            CLEAR_BIT(GpioPort->CRL, (0x3UL << modePos)|(0x3UL << cnfPos));
-            SET_BIT(GpioPort->CRL, (0x1UL << modePos));
-          }
+            SET_BIT(GpioPort->CRL, (speedVal << modePos));
+        }
+        else if constexpr (mode == gpio::PinMode::AF_PushPull)
+        {
+          constexpr uint32_t speedVal = get_SpeedVal<speed>();
+          if constexpr (pinNum > 7)
+            SET_BIT(GpioPort->CRH, (speedVal << modePos)|(0x2UL << cnfPos));
+          else
+            SET_BIT(GpioPort->CRL, (speedVal << modePos)|(0x2UL << cnfPos));
         }
         else
           throw "Not implemented";
@@ -100,6 +114,19 @@ namespace gpio
       constexpr static uint32_t get_CnfPos()
       {
         return get_ModePos() + 2;
+      }
+
+      template<gpio::PinSpeed speed>
+      constexpr static uint32_t get_SpeedVal()
+      {
+        if constexpr (speed == gpio::PinSpeed::Speed_10MHz)
+          return 0x1UL;
+        else if constexpr (speed == gpio::PinSpeed::Speed_2MHz)
+          return 0x2UL;
+        else if constexpr (speed == gpio::PinSpeed::Speed_50MHz)
+          return 0x3UL;
+        else
+          throw "Out of range";
       }
     };
 
