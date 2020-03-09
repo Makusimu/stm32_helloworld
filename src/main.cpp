@@ -3,6 +3,7 @@
 #include "rcc/rcc.h"
 #include "gpio/gpio.h"
 #include "led.h"
+#include "io/usart.h"
 
 int main()
 {
@@ -15,8 +16,20 @@ int main()
 
   using LedControl = Led<port13>;
 
+  io::Usart1::InitClock();
+
+  gpio::GpioA::InitClock();
+  using tx = gpio::PA9;
+  using rx = gpio::PA10;
+
+  tx::Init<gpio::PinMode::AF_PushPull, gpio::PinSpeed::Speed_50MHz>();
+  rx::Init<gpio::PinMode::AF_PushPull, gpio::PinSpeed::Speed_50MHz>();
+
+  io::Usart1::Init();
+
   while(1)
   {
+    io::Usart1::WriteDataSync((uint8_t *)"!\n", 2);
     LedControl::Toggle();
     rcc::Systick::Delay(500);
   }
