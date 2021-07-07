@@ -1,0 +1,20 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "openocd",
+            "cwd": "${workspaceRoot}",
+            "executable": "./bin/debug/main.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "svdFile": "./system/STM32F103xx.svd",
+            "configFiles": [
+                "z:/#Embedded/programs/openocd-v0.11.0/share/openocd/scripts/board/stm32f103c8_blue_pill.cfg"
+            ]
+        }
+    ]
+}

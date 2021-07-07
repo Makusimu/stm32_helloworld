@@ -13,7 +13,7 @@
     "configurations": [
         {
             "name": "Embedded",
-            "intelliSenseMode": "gcc-x86",
+            "intelliSenseMode": "gcc-x64",
             "includePath": [
                 "${project-includes}"
             ],
@@ -21,7 +21,7 @@
                 "STM32F103xB",
                 "__forceinline=\"__attribute__((always_inline))\""
             ],
-            "compilerPath": "${arm-gcc}",
+            "compilerPath": "z:/#Embedded/programs/arm-gcc/bin/arm-none-eabi-g++.exe",
             "cStandard": "c11",
             "cppStandard": "c++17",
             "browse": {
