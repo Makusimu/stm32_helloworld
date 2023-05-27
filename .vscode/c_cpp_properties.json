@@ -21,7 +21,7 @@
                 "STM32F103xB",
                 "__forceinline=\"__attribute__((always_inline))\""
             ],
-            "compilerPath": "z:/#Embedded/programs/arm-gcc/bin/arm-none-eabi-g++.exe",
+            "compilerPath": "${arm-gcc}/arm-none-eabi-gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++17",
             "browse": {

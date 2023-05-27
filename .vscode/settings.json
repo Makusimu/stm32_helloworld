@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "stdint.h": "c"
+  },
+  "cortex-debug.armToolchainPath": "z:/#Embedded/programs/arm-gcc/bin",
+  "cortex-debug.openocdPath": "z:/#Embedded/programs/OpenOCD-v0.11.0/bin/openocd.exe"
+}
