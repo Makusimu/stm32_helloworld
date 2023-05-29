@@ -157,3 +157,6 @@ view:
 	@echo $(C_FILES)
 	@echo $(CPP_FILES)
 	@echo $(OBJ_FILES)
+
+prog: $(TARGET).elf
+	openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program $(TARGET).elf verify exit reset"
