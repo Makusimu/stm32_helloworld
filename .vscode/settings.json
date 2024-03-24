@@ -2,9 +2,10 @@
   "files.associations": {
     "stdint.h": "c"
   },
-  "cortex-debug.armToolchainPath": "../../programs/arm-gcc/bin",
+  "cortex-debug.armToolchainPath": "../../programs/arm-gcc/bin/arm-none-eabi-gcc.exe",
+  "cortex-debug.gdbPath": "../../programs/arm-gcc/bin/arm-none-eabi-gdb.exe",
   "cortex-debug.openocdPath": "../../programs/OpenOCD-v0.11.0/bin/openocd.exe",
   "terminal.integrated.env.windows": {
-    "PATH": "../../programs/MinGW/msys/1.0/bin;../../programs/openocd/bin;${env:PATH}"
+    "PATH": "../../programs/MinGW/msys/1.0/bin;../../programs/openocd/bin;../../programs/arm-gcc/bin;${env:PATH}"
   }
 }
